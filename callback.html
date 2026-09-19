@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conectando ao ClipAI</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin:0; height:100vh; display:grid; place-items:center; text-align:center;
+         background:#0e0e10; color:#e8e8ea; font:15px system-ui,-apple-system,sans-serif; }
+  .c { max-width: 460px; padding: 32px; }
+  h1 { font-size:18px; margin:0 0 12px; }
+  p  { color:#8b8b95; line-height:1.6; }
+  a, button { color:#000; background:#ffd400; border:0; border-radius:8px;
+              padding:10px 18px; font:inherit; font-weight:600; cursor:pointer;
+              text-decoration:none; display:inline-block; margin-top:12px; }
+  code { background:#17171a; padding:2px 6px; border-radius:4px; font-size:13px; }
+</style>
+</head>
+<body>
+<div class="c">
+  <h1 id="titulo">Devolvendo ao ClipAI…</h1>
+  <p id="texto">Se nada acontecer em alguns segundos, use o botão abaixo.</p>
+  <p id="acao"></p>
+</div>
+
+<script>
+// Esta página existe por uma exigência do TikTok: a redirect URI precisa ser absoluta e
+// começar com https, então 127.0.0.1 não pode ser registrado. Ela é estática, pública e
+// não guarda nada — só repassa os parâmetros para o ClipAI rodando na máquina.
+//
+// Publique em GitHub Pages (ou equivalente) e registre esta URL como Redirect URI no
+// painel do TikTok for Developers.
+
+const PORTA_PADRAO = 7788;
+const qs = location.search || '';
+const porta = new URLSearchParams(qs).get('porta') || PORTA_PADRAO;
+const destino = `http://127.0.0.1:${porta}/oauth/tiktok${qs}`;
+
+document.getElementById('acao').innerHTML =
+  `<a href="${destino}">Abrir o ClipAI</a>`;
+
+const erro = new URLSearchParams(qs).get('error');
+if (erro) {
+  document.getElementById('titulo').textContent = 'O TikTok recusou a autorização';
+  document.getElementById('texto').textContent =
+    new URLSearchParams(qs).get('error_description') || erro;
+} else if (!new URLSearchParams(qs).get('code')) {
+  document.getElementById('titulo').textContent = 'Nada para repassar';
+  document.getElementById('texto').innerHTML =
+    'Esta página só funciona como retorno do login do TikTok. ' +
+    'Ela deve estar registrada como <code>Redirect URI</code> no app.';
+} else {
+  location.replace(destino);
+}
+</script>
+</body>
+</html>
