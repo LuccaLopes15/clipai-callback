@@ -32,10 +32,12 @@
 // Publique em GitHub Pages (ou equivalente) e registre esta URL como Redirect URI no
 // painel do TikTok for Developers.
 
-const PORTA_PADRAO = 7788;
+// O destino é fixo de propósito. Uma versão anterior aceitava ?porta= na URL, o que
+// permitiria montar um link que faz o navegador de quem clicasse bater em qualquer
+// porta local. Sem parâmetro, esta página só consegue apontar para um lugar.
+const DESTINO_BASE = 'http://127.0.0.1:7788/oauth/tiktok';
 const qs = location.search || '';
-const porta = new URLSearchParams(qs).get('porta') || PORTA_PADRAO;
-const destino = `http://127.0.0.1:${porta}/oauth/tiktok${qs}`;
+const destino = DESTINO_BASE + qs;
 
 document.getElementById('acao').innerHTML =
   `<a href="${destino}">Abrir o ClipAI</a>`;
